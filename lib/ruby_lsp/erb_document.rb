@@ -30,7 +30,7 @@ module RubyLsp
           token
         end
       end
-      warn(output)
+
       output
     end
   end
