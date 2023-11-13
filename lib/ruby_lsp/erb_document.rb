@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "strscan"
+require "erb"
 
 module RubyLsp
   class ERBDocument < Document
@@ -18,24 +19,18 @@ module RubyLsp
 
     sig { params(source: String).returns(String) }
     def scan(source)
-      scanner = StringScanner.new(source)
       output = +""
-
-      until scanner.eos?
-        non_ruby_code = scanner.scan_until(/<%(-|=)?/)
-        break unless non_ruby_code
-
-        output << non_ruby_code.gsub(/[^\n]/, " ")
-
-        ruby_code = scanner.scan_until(/(-)?%>/)
-        break unless ruby_code
-
-        output << ruby_code[...-2]
-        output << "  "
+      # There are three variations of Scanner: TrimScanner, ExplicitScanner,
+      # SimpleScanner. Worth investigating how each are distinct
+      scanner = ERB::Compiler::TrimScanner.new(source, "", false)
+      scanner.scan do |token|
+        output << if ["<%", "<%=", "<%-", "%>", "-%>"].include?(token)
+          " " * token.length
+        else
+          token
+        end
       end
-
       warn(output)
-
       output
     end
   end
