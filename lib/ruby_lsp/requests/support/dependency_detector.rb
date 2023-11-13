@@ -64,6 +64,11 @@ module RubyLsp
       direct_dependency?(/^sorbet/) || direct_dependency?(/^sorbet-static-and-runtime/)
     end
 
+    sig { params(uri: URI::Generic).returns(T::Boolean) }
+    def typechecker_for_uri?(uri)
+      detect_typechecker && !erb?(uri)
+    end
+
     sig { returns(T::Array[String]) }
     def dependencies
       # NOTE: If changing this behaviour, it's likely that the VS Code extension will also need changed.
@@ -83,6 +88,13 @@ module RubyLsp
       Bundler.locked_gems.sources
         .grep(Bundler::Source::Gemspec)
         .flat_map { _1.gemspec&.dependencies&.map(&:name) }
+    end
+
+    private
+
+    sig { params(uri: URI::Generic).returns(T::Boolean) }
+    def erb?(uri)
+      uri.to_s.match?(/\.(?:erb|rhtml|rhtm)$/)
     end
   end
 end

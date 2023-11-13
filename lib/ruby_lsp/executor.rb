@@ -295,7 +295,7 @@ module RubyLsp
 
       # Instantiate all listeners
       dispatcher = Prism::Dispatcher.new
-      hover = Requests::Hover.new(@index, nesting, dispatcher, @message_queue)
+      hover = Requests::Hover.new(@index, nesting, uri, dispatcher, @message_queue)
 
       # Emit events for all listeners
       dispatcher.dispatch_once(target)

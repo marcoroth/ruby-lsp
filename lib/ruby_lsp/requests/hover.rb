@@ -36,13 +36,15 @@ module RubyLsp
         params(
           index: RubyIndexer::Index,
           nesting: T::Array[String],
+          uri: URI::Generic,
           dispatcher: Prism::Dispatcher,
           message_queue: Thread::Queue,
         ).void
       end
-      def initialize(index, nesting, dispatcher, message_queue)
+      def initialize(index, nesting, uri, dispatcher, message_queue)
         @index = index
         @nesting = nesting
+        @uri = uri
         @_response = T.let(nil, ResponseType)
 
         super(dispatcher, message_queue)
@@ -76,21 +78,21 @@ module RubyLsp
 
       sig { params(node: Prism::ConstantReadNode).void }
       def on_constant_read_node_enter(node)
-        return if DependencyDetector.instance.typechecker
+        return if DependencyDetector.instance.typechecker_for_uri?(@uri)
 
         generate_hover(node.slice, node.location)
       end
 
       sig { params(node: Prism::ConstantWriteNode).void }
       def on_constant_write_node_enter(node)
-        return if DependencyDetector.instance.typechecker
+        return if DependencyDetector.instance.typechecker_for_uri?(@uri)
 
         generate_hover(node.name.to_s, node.name_loc)
       end
 
       sig { params(node: Prism::ConstantPathNode).void }
       def on_constant_path_node_enter(node)
-        return if DependencyDetector.instance.typechecker
+        return if DependencyDetector.instance.typechecker_for_uri?(@uri)
 
         generate_hover(node.slice, node.location)
       end
