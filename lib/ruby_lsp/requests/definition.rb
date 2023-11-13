@@ -150,9 +150,8 @@ module RubyLsp
           # additional behavior on top of jumping to RBIs. Sorbet can already handle go to definition for all constants
           # in the project, even if the files are typed false
           file_path = entry.file_path
-          if DependencyDetector.instance.typechecker_for_uri?(@uri) && bundle_path && !file_path.start_with?(bundle_path) &&
-              !file_path.start_with?(RbConfig::CONFIG["rubylibdir"])
-
+          if DependencyDetector.instance.typechecker_for_uri?(@uri) && bundle_path &&
+              !file_path.start_with?(bundle_path) && !file_path.start_with?(RbConfig::CONFIG["rubylibdir"])
             next
           end
 

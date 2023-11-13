@@ -40,9 +40,8 @@ module RubyLsp
           # If the project is using Sorbet, we let Sorbet handle symbols defined inside the project itself and RBIs, but
           # we still return entries defined in gems to allow developers to jump directly to the source
           file_path = entry.file_path
-          if DependencyDetector.instance.typechecker_for_uri?(@uri) && bundle_path && !file_path.start_with?(bundle_path) &&
-              !file_path.start_with?(RbConfig::CONFIG["rubylibdir"])
-
+          if DependencyDetector.instance.typechecker_for_uri?(@uri) && bundle_path &&
+              !file_path.start_with?(bundle_path) && !file_path.start_with?(RbConfig::CONFIG["rubylibdir"])
             next
           end
 

@@ -98,6 +98,11 @@ module RubyLsp
             MARKDOWN
           )
         end
+
+        sig { params(uri: URI::Generic).returns(T::Boolean) }
+        def erb?(uri)
+          uri.to_s.match?(/\.(?:erb|rhtml|rhtm)$/)
+        end
       end
     end
   end
